@@ -1,0 +1,5 @@
+from amazon_meta2json import amazon_mata2json
+from amazon_preprocess_network import amazon_preprocess_network
+
+amazon_mata2json()
+amazon_preprocess_network()

@@ -3,7 +3,7 @@ from scipy.sparse import csc_matrix, rand, diags
 from loss_func import loss_func
 
 
-def multilayered_hits(G, A, D, mu=1, iteration_times=100):
+def multilayered_hits(G, A, D, mu=0.1, iteration_times=20):
     """
     Multilayered-HITS Algorithm
     :param G: The layer-layer dependency matrix

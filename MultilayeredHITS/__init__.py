@@ -11,7 +11,7 @@ from get_collection_from_db import get_collection_from_db
 
 """
 mu = 0.1
-iteration_times = 100
+iteration_times = 20
 [G, A, D] = load_mat_data("../AmazonDataProcessing/datasets/ItalyInfra.mat")
 [u, v] = multilayered_hits(G, A, D, mu, iteration_times)
 """
@@ -38,11 +38,11 @@ def display_help():
     print "                         * 1 knowledge layer (customer);"
     print "--query_node_index       The query node for query task."
     print "--N                      The K-step subgraph for query task."
-    print "--mu                     The regularization parameter for cross-layer consistency, default is 1."
-    print "--iteration_times        The iteration times for the algorithm, default is 100."
+    print "--mu                     The regularization parameter for cross-layer consistency, default is 0.1."
+    print "--iteration_times        The iteration times for the algorithm, default is 20."
     print ""
     print "Ranking example:"
-    print "python __init__.py -t 0 --selected_layers book,dvd,music,video,customer"
+    print "python __init__.py -t 0 --selected_layers book,dvd,music,video --iteration_times 20"
     print ""
     print "Query example:"
     print "python __init__.py -t 1 --query_node 4228 --N 3 --iteration_times 20"
@@ -52,12 +52,12 @@ if __name__ == '__main__':
 
     DATA_LAYERS = ("Book", "DVD", "Music", "Video")
     PRODUCT_LINK_PREFIX = "www.amazon.com/gp/product/"
-    K = 10  # top K products
+    K = 5  # top K products
 
     products = get_collection_from_db()  # product collection
 
     mu = 0.1  # regularization parameter
-    iteration_times = 100
+    iteration_times = 20
 
     task = None  # 0 for ranking, 1 for query
 

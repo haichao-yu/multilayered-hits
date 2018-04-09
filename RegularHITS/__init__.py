@@ -8,7 +8,7 @@ if __name__ == '__main__':
 
     DATA_LAYERS = ("Book", "DVD", "Music", "Video")
     PRODUCT_LINK_PREFIX = "www.amazon.com/gp/product/"
-    K = 10  # top K products
+    K = 5  # top K products
 
     dataset = "../AmazonDataProcessing/datasets/amazon-data-graph.npy"
     # dataset = "../AmazonDataProcessing/datasets/amazon-data-knowledge-graph.npy"

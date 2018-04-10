@@ -11,12 +11,6 @@ def query_get_input_matrices(query_node_index=77103, N=3):
     # Load the data graph (The reason we don't consider customer nodes is that they cause high bias in the subgraph nodes)
     data = np.load("../AmazonDataProcessing/datasets/amazon-data-graph.npy").item()
     adjacency_matrix = data["adjacency_matrix"]
-    index2Id = data["index2Id"]
-    indices_book = data["indices_book"]
-    indices_dvd = data["indices_dvd"]
-    indices_music = data["indices_music"]
-    indices_video = data["indices_video"]
-    
     # print type(adjacency_matrix)  # <class 'scipy.sparse.csr.csr_matrix'>
 
     # data = adjacency_matrix.data
@@ -39,22 +33,18 @@ def query_get_input_matrices(query_node_index=77103, N=3):
     # Get input for multi-layered HITS algorithm according to correspondent layers
     layers = ["book", "dvd", "music", "video"]
 
-    data = {"subgraph_indices_book": [], "subgraph_indices_dvd": [], "subgraph_indices_music": [], "subgraph_indices_video": []}
+    temp = {"subgraph_indices_book": [], "subgraph_indices_dvd": [], "subgraph_indices_music": [], "subgraph_indices_video": []}
     for idx in np.sort(subgraph_node_indices):
-        if idx in indices_book:
-            data["subgraph_indices_book"].append(idx)
-        elif idx in indices_dvd:
-            data["subgraph_indices_dvd"].append(idx)
-        elif idx in indices_music:
-            data["subgraph_indices_music"].append(idx)
-        else:  # indices_video
-            data["subgraph_indices_video"].append(idx)
+        for l in layers:
+            if data["indices_range_" + l][0] <= idx < data["indices_range_" + l][1]:
+                temp["subgraph_indices_" + l].append(idx)
+                break
 
     WithinLayerNets = []
     WithinLayerNetsDict = []
     for l in layers:
-        WithinLayerNets.append(adjacency_matrix[data["subgraph_indices_"+l], :].tocsc()[:, data["subgraph_indices_"+l]])
-        WithinLayerNetsDict.append(index2Id[data["subgraph_indices_"+l]])
+        WithinLayerNets.append(adjacency_matrix[temp["subgraph_indices_"+l], :].tocsc()[:, temp["subgraph_indices_"+l]])
+        WithinLayerNetsDict.append(data['index2Id_'+l][np.array(temp["subgraph_indices_"+l], dtype=int) - int(data["indices_range_" + l][0])])
     WithinLayerNets = np.array(WithinLayerNets)
     WithinLayerNetsDict = np.array(WithinLayerNetsDict)
 
@@ -66,16 +56,21 @@ def query_get_input_matrices(query_node_index=77103, N=3):
         for j in range(i + 1, len(layers)):
             position += 1
             GroupNet[i, j] = GroupNet[j, i] = position
-            CrossLayerDependencies.append(adjacency_matrix[data["subgraph_indices_"+layers[i]], :].tocsc()[:, data["subgraph_indices_"+layers[j]]])
+            CrossLayerDependencies.append(adjacency_matrix[temp["subgraph_indices_"+layers[i]], :].tocsc()[:, temp["subgraph_indices_"+layers[j]]])
     CrossLayerDependencies = np.array(CrossLayerDependencies)
 
+    query_product_id = -1
+    for l in layers:
+        if data["indices_range_" + l][0] <= query_node_index < data["indices_range_" + l][1]:
+            query_product_id = data["index2Id_" + l][query_node_index - data["indices_range_" + l][0]]
+
     # Return
-    data = {
-        "QueryProductId": index2Id[query_node_index],
+    subgraph_data = {
+        "QueryProductId": query_product_id,
         "GroupNet": GroupNet,
         "GroupDict": GroupDict,
         "WithinLayerNets": WithinLayerNets,
         "WithinLayerNetsDict": WithinLayerNetsDict,
         "CrossLayerDependencies": CrossLayerDependencies,
     }
-    return data
+    return subgraph_data

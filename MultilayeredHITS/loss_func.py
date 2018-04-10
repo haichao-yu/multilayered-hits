@@ -24,7 +24,7 @@ def loss_func(G, A, D, u, v, mu):
         for j in range(G.shape[1]):
 
             # There is no dependency between layer i and layer j
-            if int(G[i, j]) == 0:
+            if i == j or int(G[i, j]) == 0:
                 continue
 
             # There is a dependency (matrix Dij) between layer i and layer j

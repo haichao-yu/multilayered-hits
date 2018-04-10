@@ -49,7 +49,7 @@ def multilayered_hits(G, A, D, mu=0.1, iteration_times=20):
             for j in range(G.shape[1]):
 
                 # There is no dependency between layer i and layer j
-                if int(G[i, j]) == 0:
+                if i == j or int(G[i, j]) == 0:
                     continue
 
                 # There is a dependency (matrix Dij) between layer i and layer j

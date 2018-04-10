@@ -28,43 +28,48 @@ def amazon_preprocess_network():
         if products[node]["group"] != "Book" and products[node]["group"] != "DVD" and products[node]["group"] != "Music" and products[node]["group"] != "Video":
             nodes_to_remove.append(node)
     G.remove_nodes_from(nodes_to_remove)
-    # print G.number_of_nodes()   # 334844
-    # print G.number_of_edges()   # 925803
+    print G.number_of_nodes()   # 334844
+    print G.number_of_edges()   # 925803
 
-    # Get indices for each layer (Book, DVD, Music, Video) and the index2id dictionay
-    indices_book = []
-    indices_dvd = []
-    indices_music = []
-    indices_video = []
+    # Get nodes for each group (Book, DVD, Music, Video)
+    nodes_book = []
+    nodes_dvd = []
+    nodes_music = []
+    nodes_video = []
 
-    index2Id = []
-
-    for idx, node in enumerate(G.nodes()):
+    for node in G.nodes():
         if products[node]["group"] == "Book":
-            indices_book.append(idx)
+            nodes_book.append(node)
         elif products[node]["group"] == "DVD":
-            indices_dvd.append(idx)
+            nodes_dvd.append(node)
         elif products[node]["group"] == "Music":
-            indices_music.append(idx)
+            nodes_music.append(node)
         else:  # "Video"
-            indices_video.append(idx)
-        index2Id.append(node)
-    # print len(indices_book)     # 248916
-    # print len(indices_dvd)      # 15743
-    # print len(indices_music)    # 54824
-    # print len(indices_video)    # 15361
-    # print len(index2Id)         # 334844
+            nodes_video.append(node)
+    print len(nodes_book)       # 248916
+    print len(nodes_dvd)        # 15743
+    print len(nodes_music)      # 54824
+    print len(nodes_video)      # 15361
+
+    # Get indices range for each group
+    indices_range_book = [0, 0 + len(nodes_book)]
+    indices_range_dvd = [indices_range_book[1], indices_range_book[1] + len(nodes_dvd)]
+    indices_range_music = [indices_range_dvd[1], indices_range_dvd[1] + len(nodes_music)]
+    indices_range_video = [indices_range_music[1], indices_range_music[1] + len(nodes_video)]
 
     # Save the data (Without knowledge layer - customers)
     data = {
-        "adjacency_matrix": nx.adjacency_matrix(G),
+        "adjacency_matrix": nx.adjacency_matrix(G, nodelist=(nodes_book + nodes_dvd + nodes_music + nodes_video)),
 
-        "indices_book": np.array(indices_book),
-        "indices_dvd": np.array(indices_dvd),
-        "indices_music": np.array(indices_music),
-        "indices_video": np.array(indices_video),
+        "indices_range_book": np.array(indices_range_book),
+        "indices_range_dvd": np.array(indices_range_dvd),
+        "indices_range_music": np.array(indices_range_music),
+        "indices_range_video": np.array(indices_range_video),
 
-        "index2Id": np.array(index2Id),
+        "index2Id_book": np.array(nodes_book),
+        "index2Id_dvd": np.array(nodes_dvd),
+        "index2Id_music": np.array(nodes_music),
+        "index2Id_video": np.array(nodes_video),
     }
     np.save("./datasets/amazon-data-graph.npy", data)
 
@@ -76,27 +81,28 @@ def amazon_preprocess_network():
                 product_customer_edges.append((node, r["customer"]))
     G.add_edges_from(product_customer_edges)
 
-    Ids_customer = []  # Ids_knowledge
+    nodes_customer = []
     for node in G.nodes():
         if not isinstance(node, int):
-            Ids_customer.append(node)
-    # print len(Ids_customer)     # 1144145
+            nodes_customer.append(node)
+    print len(nodes_customer)     # 1144145
 
     # Save the data (With knowledge layer - customers)
-    index2Id += Ids_customer
     data = {
-        "adjacency_matrix": nx.adjacency_matrix(G, nodelist=(index2Id)),
+        "adjacency_matrix": nx.adjacency_matrix(G, nodelist=(nodes_book + nodes_dvd + nodes_music + nodes_video)),
 
-        "indices_book": np.array(indices_book),
-        "indices_dvd": np.array(indices_dvd),
-        "indices_music": np.array(indices_music),
-        "indices_video": np.array(indices_video),
-        "indices_customer": np.array(range(len(index2Id) - len(Ids_customer), len(index2Id))),
+        "indices_range_book": np.array(indices_range_book),
+        "indices_range_dvd": np.array(indices_range_dvd),
+        "indices_range_music": np.array(indices_range_music),
+        "indices_range_video": np.array(indices_range_video),
+        "indices_range_customer": np.array([indices_range_video[1], indices_range_video[1] + len(nodes_customer)]),
 
-        "index2Id": np.array(index2Id),
+        "index2Id_book": np.array(nodes_book),
+        "index2Id_dvd": np.array(nodes_dvd),
+        "index2Id_music": np.array(nodes_music),
+        "index2Id_video": np.array(nodes_video),
+        "index2Id_customer": np.array(nodes_customer),
     }
     np.save("./datasets/amazon-data-knowledge-graph.npy", data)
-
-    # print len(index2Id)         # 1478989
 
     print "Finish preprocessing amazon network."

@@ -6,7 +6,9 @@ from get_collection_from_db import get_collection_from_db
 
 if __name__ == '__main__':
 
-    DATA_LAYERS = ("Book", "DVD", "Music", "Video")
+    products = get_collection_from_db()
+
+    DATA_LAYERS = ("book", "dvd", "music", "video")
     PRODUCT_LINK_PREFIX = "www.amazon.com/gp/product/"
     K = 5  # top K products
 
@@ -14,50 +16,45 @@ if __name__ == '__main__':
     # dataset = "../AmazonDataProcessing/datasets/amazon-data-knowledge-graph.npy"
     iteration_times = 40
 
-    [A, index2Id] = ranking_get_input_matrix(dataset)
+    data = ranking_get_input_matrix(dataset)
+    A = data['adjacency_matrix']
     # print adjacency_matrix.shape
     [u, v] = regular_hits(A, iteration_times)
 
-    rank_u = np.flip(np.argsort(u.todense().getA1()), axis=0)
-    rank_v = np.flip(np.argsort(v.todense().getA1()), axis=0)
-
-    products = get_collection_from_db()
-
     top_K_products_authority = {
-        "Book": [["Rank", "Product", "Link", "Salesrank", "Rating"]],
-        "DVD": [["Rank", "Product", "Link", "Salesrank", "Rating"]],
-        "Music": [["Rank", "Product", "Link", "Salesrank", "Rating"]],
-        "Video": [["Rank", "Product", "Link", "Salesrank", "Rating"]]
+        "book": [["Rank", "Product", "Link", "Salesrank", "Rating"]],
+        "dvd": [["Rank", "Product", "Link", "Salesrank", "Rating"]],
+        "music": [["Rank", "Product", "Link", "Salesrank", "Rating"]],
+        "video": [["Rank", "Product", "Link", "Salesrank", "Rating"]]
     }
-    for rank, index in enumerate(rank_u):
-        record = products.find_one({"Id": index2Id[index]})
-        if record is None:
-            continue
-        top_K_products_authority[record["group"]].append([rank + 1, record["title"], PRODUCT_LINK_PREFIX + record["ASIN"], record["salesrank"]])
-        if len(top_K_products_authority["Book"]) > K and len(top_K_products_authority["DVD"]) > K and len(top_K_products_authority["Music"]) > K and len(top_K_products_authority["Video"]) > K:
-            break
-
     top_K_products_hub = {
-        "Book": [["Rank", "Product", "Link", "Salesrank", "Rating"]],
-        "DVD": [["Rank", "Product", "Link", "Salesrank", "Rating"]],
-        "Music": [["Rank", "Product", "Link", "Salesrank", "Rating"]],
-        "Video": [["Rank", "Product", "Link", "Salesrank", "Rating"]]
+        "book": [["Rank", "Product", "Link", "Salesrank", "Rating"]],
+        "dvd": [["Rank", "Product", "Link", "Salesrank", "Rating"]],
+        "music": [["Rank", "Product", "Link", "Salesrank", "Rating"]],
+        "video": [["Rank", "Product", "Link", "Salesrank", "Rating"]]
     }
-    for rank, index in enumerate(rank_v):
-        record = products.find_one({"Id": index2Id[index]})
-        if record is None:
-            continue
-        top_K_products_hub[record["group"]].append([rank + 1, record["title"], PRODUCT_LINK_PREFIX + record["ASIN"], record["salesrank"]])
-        if len(top_K_products_hub["Book"]) > K and len(top_K_products_hub["DVD"]) > K and len(top_K_products_hub["Music"]) > K and len(top_K_products_hub["Video"]) > K:
-            break
 
     for g in DATA_LAYERS:
-        top_K_products_authority[g] = top_K_products_authority[g][0:K+1]
+        ui = u[data['indices_range_' + g][0]:data['indices_range_' + g][1], 0]
+        vi = v[data['indices_range_' + g][0]:data['indices_range_' + g][1], 0]
+        rank_ui = np.flip(np.argsort(ui.todense().getA1()), axis=0)
+        rank_vi = np.flip(np.argsort(vi.todense().getA1()), axis=0)
+        for rank, index in enumerate(rank_ui):
+            record = products.find_one({"Id": int(data['index2Id_' + g][index])})
+            top_K_products_authority[g].append(
+                [rank + 1, record["title"], PRODUCT_LINK_PREFIX + record["ASIN"], record["salesrank"]])
+            if len(top_K_products_authority[g]) > K:
+                break
         table = AsciiTable(top_K_products_authority[g])
-        table.title = "Top " + str(K) + " " + g + "s (Authority)"
+        table.title = "Top " + str(K) + " relevant " + g + "s (Authority)"
         print table.table
-        top_K_products_hub[g] = top_K_products_hub[g][0:K + 1]
+        for rank, index in enumerate(rank_vi):
+            record = products.find_one({"Id": int(data['index2Id_' + g][index])})
+            top_K_products_hub[g].append(
+                [rank + 1, record["title"], PRODUCT_LINK_PREFIX + record["ASIN"], record["salesrank"]])
+            if len(top_K_products_hub[g]) > K:
+                break
         table = AsciiTable(top_K_products_hub[g])
-        table.title = "Top " + str(K) + " " + g + "s (Hub)"
+        table.title = "Top " + str(K) + " relevant " + g + "s (Hub)"
         print table.table
         print ""

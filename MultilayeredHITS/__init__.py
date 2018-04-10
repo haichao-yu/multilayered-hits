@@ -50,7 +50,6 @@ def display_help():
 
 if __name__ == '__main__':
 
-    DATA_LAYERS = ("Book", "DVD", "Music", "Video")
     PRODUCT_LINK_PREFIX = "www.amazon.com/gp/product/"
     K = 5  # top K products
 

@@ -1,6 +1,7 @@
 import numpy as np
 from terminaltables import AsciiTable  # https://robpol86.github.io/terminaltables/index.html
 from ranking_get_input_matrix import ranking_get_input_matrix
+from query_get_input_matrix import query_get_input_matrix
 from regular_hits import regular_hits
 from get_collection_from_db import get_collection_from_db
 
@@ -16,7 +17,8 @@ if __name__ == '__main__':
     # dataset = "../AmazonDataProcessing/datasets/amazon-data-knowledge-graph.npy"
     iteration_times = 40
 
-    data = ranking_get_input_matrix(dataset)
+    # data = ranking_get_input_matrix(dataset)
+    data = query_get_input_matrix(dataset, 249080, 3)
     A = data['adjacency_matrix']
     # print adjacency_matrix.shape
     [u, v] = regular_hits(A, iteration_times)

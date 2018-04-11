@@ -2,7 +2,7 @@ import numpy as np
 from collections import deque
 
 
-def query_get_input_matrices(query_node_index=77103, N=3):
+def query_get_input_matrices(query_node_index=249080, N=3):
 
     """
     Step 3: Get input adjacency matrices from the subgraph given the query node.

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_pymongo import PyMongo
 
 from src.load_data import load_data_multilayered_hits_ranking
@@ -16,6 +16,11 @@ app.config['MONGO_DBNAME'] = 'amazon'
 app.config['MONGO_URI'] = 'mongodb://localhost:27017/amazon'
 mongo = PyMongo(app)
 dataset = './AmazonDataProcessing/datasets/amazon-data-graph.npy'
+
+
+@app.route('/')
+def welcome():
+    return render_template('index.html')
 
 
 @app.route('/api/run_experiment')

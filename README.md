@@ -13,5 +13,8 @@ This algorithm gives authority score and hub score for each node in each layer.
 ## Dataset
 The dataset in this repository is a five layer Italy network in the critical infrastructure domain (INFRA-5). This dataset is provided by Ms. Chen Chen.
 
+## Deploy
+You can refer to [this link](https://progblog.io/How-to-deploy-a-Flask-App-to-Heroku/).
+
 ## Remark
 This is the very first version of the code. And many optimization is need to do. For questions please contact the author by __haichaoy@asu.edu__. 

@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from scipy.sparse import csc_matrix, rand
 from loss_func import loss_func_regular
 

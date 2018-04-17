@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 from scipy.sparse import csc_matrix, rand
+from loss_func import loss_func_regular
 
-
-def regular_hits(A, iteration_times=100):
+def regular_hits(A, iteration_times=40):
     """
     Regular HITS Algorithm
     :param A: Adjacency matrix
@@ -42,20 +42,18 @@ def regular_hits(A, iteration_times=100):
         u = next_u
         v = next_v_transpose.transpose()
 
-        # J = 0.5 * norm(A / float(A.sum() + epsilon) - u.dot(v.transpose())) ** 2
-        J = 0.5 * (1 / float(A.sum() + epsilon) ** 2) * A.dot(A.transpose()).diagonal().sum() - (u.transpose().dot((A / float(A.sum() + epsilon)).dot(v)))[0, 0] + 0.5 * ((u.transpose().dot(u)) * (v.transpose().dot(v)))[0, 0]
-        J_list.append(J)
+        # J_list.append(loss_func_regular(A, u, v))
 
         print "The %03dth iteration is completed." % (t + 1)
 
     print "Regular HITS algorithm is completed.\n"
 
     # Draw figure: cost w.r.t iteration
-    plt.figure()
-    plt.title("Cost w.r.t Iteration")
-    plt.xlabel("Iteration")
-    plt.ylabel("Cost")
-    plt.plot(range(1, iteration_times + 1), J_list, label="J")
-    plt.show()
+    # plt.figure()
+    # plt.title("Cost w.r.t Iteration")
+    # plt.xlabel("Iteration")
+    # plt.ylabel("Cost")
+    # plt.plot(range(1, iteration_times + 1), J_list, label="J")
+    # plt.show()
 
     return [u, v]

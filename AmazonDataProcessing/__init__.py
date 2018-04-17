@@ -1,5 +1,8 @@
 from amazon_meta2json import amazon_mata2json
 from amazon_preprocess_network import amazon_preprocess_network
+from add_data_to_mongodb import add_data_to_mongodb
+
 
 amazon_mata2json()
 amazon_preprocess_network()
+add_data_to_mongodb()

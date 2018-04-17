@@ -19,7 +19,7 @@ def amazon_preprocess_network():
     with gzip.open("./datasets/amazon-products.json.gz", "rb") as f:
         products = json.loads(f.read().decode("ascii"))
 
-    # Represent amazon product co-purchasing network (http://snap.stanford.edu/data/com-Amazon.html) as a networkx graph obj (node is product Id)
+    # Represent amazon product co-purchasing network (http://snap.stanford.edu/data/com-Amazon.html) as a networkx graph object (node is product Id)
     G = nx.read_edgelist("./datasets/com-amazon.ungraph.txt.gz", nodetype=int)
 
     # Remove nodes that don't belong to any of Book, DVD, Music, Video
@@ -89,7 +89,7 @@ def amazon_preprocess_network():
 
     # Save the data (With knowledge layer - customers)
     data = {
-        "adjacency_matrix": nx.adjacency_matrix(G, nodelist=(nodes_book + nodes_dvd + nodes_music + nodes_video)),
+        "adjacency_matrix": nx.adjacency_matrix(G, nodelist=(nodes_book + nodes_dvd + nodes_music + nodes_video + nodes_customer)),
 
         "indices_range_book": np.array(indices_range_book),
         "indices_range_dvd": np.array(indices_range_dvd),

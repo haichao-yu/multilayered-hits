@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from scipy.sparse import csc_matrix, rand, diags
-from loss_func import loss_func
+from loss_func import loss_func_multilayered
 
 
 def multilayered_hits(G, A, D, mu=0.1, iteration_times=20):
@@ -83,18 +83,18 @@ def multilayered_hits(G, A, D, mu=0.1, iteration_times=20):
         u = next_u
         v = next_v
 
-        J_list.append(loss_func(G, A, D, u, v, mu))
+        # J_list.append(loss_func_multilayered(G, A, D, u, v, mu))
 
         print "The %03dth iteration is completed." % (t + 1)
 
     print "Multilayered HITS algorithm is completed.\n"
 
     # Draw figure: cost w.r.t iteration
-    plt.figure()
-    plt.title("Cost w.r.t Iteration")
-    plt.xlabel("Iteration")
-    plt.ylabel("Cost")
-    plt.plot(range(1, iteration_times + 1), J_list, label="J")
-    plt.show()
+    # plt.figure()
+    # plt.title("Cost w.r.t Iteration")
+    # plt.xlabel("Iteration")
+    # plt.ylabel("Cost")
+    # plt.plot(range(1, iteration_times + 1), J_list, label="J")
+    # plt.show()
 
     return [u, v]

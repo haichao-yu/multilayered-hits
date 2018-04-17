@@ -77,3 +77,9 @@ def submit_ratings():
 
 if __name__ == '__main__':
     app.run()
+
+
+"""
+Deploy to Heroku:
+https://stackoverflow.com/questions/42019551/python-flask-heroku-application-error
+"""

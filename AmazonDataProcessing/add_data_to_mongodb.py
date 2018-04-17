@@ -34,5 +34,5 @@ def add_data_to_mongodb():
 
 """
 Command for importing json data to MongoDB:
-mongoimport -h ds012345.mlab.com:56789 -d dbname -c collectionname -u dbuser -p dbpassword --file filename.json --jsonArray
+mongoimport -h hostname -d dbname -c collectionname -u dbuser -p dbpassword --file filename.json --jsonArray
 """

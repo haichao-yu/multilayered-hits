@@ -38,7 +38,7 @@ def run_experiment():
     for l in layers:
         if request.args.get('is_' + l + '_selected') == 'true':
             selected_layers.append(l)
-    print selected_layers
+    print(selected_layers)
 
     # Run experiment
     data = None

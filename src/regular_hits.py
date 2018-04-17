@@ -1,6 +1,7 @@
 # import matplotlib.pyplot as plt
 from scipy.sparse import csc_matrix, rand
-from loss_func import loss_func_regular
+# from loss_func import loss_func_regular
+
 
 def regular_hits(A, iteration_times=40):
     """
@@ -10,7 +11,7 @@ def regular_hits(A, iteration_times=40):
     :return: Authority scores and Hub scores
     """
 
-    print "\nRegular HITS algorithm is started."
+    print("\nRegular HITS algorithm is started.")
 
     epsilon = 1e-10  # A very small constant to avoid denominator becomes 0
 
@@ -44,9 +45,9 @@ def regular_hits(A, iteration_times=40):
 
         # J_list.append(loss_func_regular(A, u, v))
 
-        print "The %03dth iteration is completed." % (t + 1)
+        print("The %03dth iteration is completed." % (t + 1))
 
-    print "Regular HITS algorithm is completed.\n"
+    print("Regular HITS algorithm is completed.\n")
 
     # Draw figure: cost w.r.t iteration
     # plt.figure()

@@ -24,7 +24,7 @@ def get_experimental_results(products, selected_layers, data, u, v, K=5):
             index2Id = data["WithinLayerNetsDict"][i]
             rank_ui = np.flip(np.argsort(u[i].todense().getA1()), axis=0)
             rank_vi = np.flip(np.argsort(v[i].todense().getA1()), axis=0)
-            for r in range(K):
+            for r in range(min(K, len(rank_ui))):
                 record_authority = products.find_one({"Id": int(index2Id[rank_ui[r]])})
                 record_hub = products.find_one({"Id": int(index2Id[rank_vi[r]])})
                 temp["products"].append({
@@ -40,7 +40,7 @@ def get_experimental_results(products, selected_layers, data, u, v, K=5):
             vi = v[data['indices_range_' + g][0]:data['indices_range_' + g][1], 0]
             rank_ui = np.flip(np.argsort(ui.todense().getA1()), axis=0)
             rank_vi = np.flip(np.argsort(vi.todense().getA1()), axis=0)
-            for r in range(K):
+            for r in range(min(K, len(rank_ui))):
                 record_authority = products.find_one({"Id": int(data['index2Id_' + g][rank_ui[r]])})
                 record_hub = products.find_one({"Id": int(data['index2Id_' + g][rank_vi[r]])})
                 temp["products"].append({

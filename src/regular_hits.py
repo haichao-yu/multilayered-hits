@@ -1,4 +1,5 @@
 # import matplotlib.pyplot as plt
+import numpy as np
 from scipy.sparse import csc_matrix, rand
 # from loss_func import loss_func_regular
 
@@ -18,8 +19,10 @@ def regular_hits(A, iteration_times=40):
     '''
     Initialize authority score and hub score
     '''
-    u = rand(A.shape[0], 1, density=1, format='csc')
-    v = rand(A.shape[0], 1, density=1, format='csc')
+    # u = rand(A.shape[0], 1, density=1, format='csc')
+    # v = rand(A.shape[0], 1, density=1, format='csc')
+    u = csc_matrix(np.ones((A.shape[0], 1)))
+    v = csc_matrix(np.ones((A.shape[0], 1)))
 
     '''
     NMF: multiplicative update u and v

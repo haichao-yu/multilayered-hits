@@ -1,4 +1,5 @@
 # import matplotlib.pyplot as plt
+import numpy as np
 from scipy.sparse import csc_matrix, rand, diags
 # from loss_func import loss_func_multilayered
 
@@ -24,8 +25,10 @@ def multilayered_hits(G, A, D, mu=0.1, iteration_times=20):
     u = []  # Authority score
     v = []  # Hub score
     for Ai in A:
-        ui = rand(Ai.shape[0], 1, density=1, format='csc')
-        vi = rand(Ai.shape[0], 1, density=1, format='csc')
+        # ui = rand(Ai.shape[0], 1, density=1, format='csc')
+        # vi = rand(Ai.shape[0], 1, density=1, format='csc')
+        ui = csc_matrix(np.ones((Ai.shape[0], 1)))
+        vi = csc_matrix(np.ones((Ai.shape[0], 1)))
         u.append(ui)
         v.append(vi)
 

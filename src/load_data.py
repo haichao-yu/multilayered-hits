@@ -1,5 +1,6 @@
 import numpy as np
-from collections import deque
+from subgraph_from_bfs import subgraph_from_bfs
+from subgraph_from_rwr import subgraph_from_rwr
 
 
 def load_data_multilayered_hits_ranking(dataset, selected_layers=("book", "dvd", "music", "video")):
@@ -44,7 +45,7 @@ def load_data_multilayered_hits_ranking(dataset, selected_layers=("book", "dvd",
     return input_data
 
 
-def load_data_multilayered_hits_query(dataset, selected_layers=("book", "dvd", "music", "video"), query_node_index=249080, N=3):
+def load_data_multilayered_hits_query(dataset, query_node_index, selected_layers=("book", "dvd", "music", "video")):
 
     # Load data
     data = np.load(dataset).item()
@@ -56,23 +57,11 @@ def load_data_multilayered_hits_query(dataset, selected_layers=("book", "dvd", "
             query_product_id = data["index2Id_" + l][query_node_index - data["indices_range_" + l][0]]
 
     adjacency_matrix = data["adjacency_matrix"]
-    # print type(adjacency_matrix)  # <class 'scipy.sparse.csr.csr_matrix'>
-    indices = adjacency_matrix.indices
-    indptr = adjacency_matrix.indptr
+    print type(adjacency_matrix)  # <class 'scipy.sparse.csr.csr_matrix'>
 
-    # BFS (N-step subgraph)
-    subgraph_node_indices = [query_node_index]
-    queue = deque([query_node_index])
-    while len(queue) > 0 and N > 0:
-        size = len(queue)
-        for counter in range(size):
-            i = queue.popleft()  # row index
-            for neighbor in indices[indptr[i]:indptr[i + 1]]:  # col index
-                if neighbor not in subgraph_node_indices:
-                    subgraph_node_indices.append(neighbor)
-                    queue.append(neighbor)
-        N -= 1
-    subgraph_node_indices = np.sort(subgraph_node_indices)
+    # Get subgraph w.r.t the query node
+    # subgraph_node_indices = subgraph_from_bfs(adjacency_matrix, query_node_index)
+    subgraph_node_indices = subgraph_from_rwr(adjacency_matrix, query_node_index)
 
     # Get input for multi-layered HITS algorithm according to selected layers
     temp = {"subgraph_indices_" + l: [] for l in selected_layers}
@@ -135,7 +124,7 @@ def load_data_regular_hits_ranking(dataset, selected_layers=("book", "dvd", "mus
     return input_data
 
 
-def load_data_regular_hits_query(dataset, selected_layers=("book", "dvd", "music", "video"), query_node_index=249080, N=3):
+def load_data_regular_hits_query(dataset, query_node_index, selected_layers=("book", "dvd", "music", "video")):
 
     # Load data
     data = np.load(dataset).item()
@@ -148,22 +137,10 @@ def load_data_regular_hits_query(dataset, selected_layers=("book", "dvd", "music
 
     adjacency_matrix = data["adjacency_matrix"]
     # print type(adjacency_matrix)  # <class 'scipy.sparse.csr.csr_matrix'>
-    indices = adjacency_matrix.indices
-    indptr = adjacency_matrix.indptr
 
-    # BFS (N-step subgraph)
-    subgraph_node_indices = [query_node_index]
-    queue = deque([query_node_index])
-    while len(queue) > 0 and N > 0:
-        size = len(queue)
-        for counter in range(size):
-            i = queue.popleft()  # row index
-            for neighbor in indices[indptr[i]:indptr[i + 1]]:  # col index
-                if neighbor not in subgraph_node_indices:
-                    subgraph_node_indices.append(neighbor)
-                    queue.append(neighbor)
-        N -= 1
-    subgraph_node_indices = np.sort(subgraph_node_indices)
+    # Get subgraph w.r.t the query node
+    # subgraph_node_indices = subgraph_from_bfs(adjacency_matrix, query_node_index)
+    subgraph_node_indices = subgraph_from_rwr(adjacency_matrix, query_node_index)
 
     # Get input for multi-layered HITS algorithm according to selected layers
     temp = {"subgraph_indices_" + l: [] for l in selected_layers}

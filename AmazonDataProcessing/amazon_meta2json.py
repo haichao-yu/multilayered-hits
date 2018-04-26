@@ -6,9 +6,8 @@ from collections import OrderedDict
 
 
 def amazon_mata2json():
-
     """
-    Step 1: Preprocess amazon meta data (http://snap.stanford.edu/data/amazon-meta.html) to a json file, which contains a dictionary for all products.
+    Step 1: Preprocess amazon meta data (http://snap.stanford.edu/data/amazon-meta.html) to a json file
     """
 
     print "Start preprocessing the amazon product metadata to a json file."

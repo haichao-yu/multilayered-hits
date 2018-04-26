@@ -5,12 +5,10 @@ import networkx as nx
 
 
 def amazon_preprocess_network():
-
     """
-    Step 2: - Read the data graph (product co-purchasing network) and save its adjacency matrix (for querying);
-              <http://snap.stanford.edu/data/com-Amazon.html>
+    Step 2: - Read the product co-purchasing network (http://snap.stanford.edu/data/com-Amazon.html) as data graph;
             - Combine knowledge graph (customers/reviews) with the data graph;
-            - Extract data+knowledge graph and save its adjacency matrix (for ranking);
+            - Extract data+knowledge graph and save its adjacency matrix;
     """
 
     print "Start preprocessing amazon network."
@@ -58,26 +56,26 @@ def amazon_preprocess_network():
     indices_range_video = [indices_range_music[1], indices_range_music[1] + len(nodes_video)]
 
     # Save the data (Without knowledge layer - customers)
-    data = {
-        "adjacency_matrix": nx.adjacency_matrix(G, nodelist=(nodes_book + nodes_dvd + nodes_music + nodes_video)),
-
-        "indices_range_book": np.array(indices_range_book),
-        "indices_range_dvd": np.array(indices_range_dvd),
-        "indices_range_music": np.array(indices_range_music),
-        "indices_range_video": np.array(indices_range_video),
-
-        "index2Id_book": np.array(nodes_book),
-        "index2Id_dvd": np.array(nodes_dvd),
-        "index2Id_music": np.array(nodes_music),
-        "index2Id_video": np.array(nodes_video),
-    }
-    np.save("./datasets/amazon-data-graph.npy", data)
+    # data = {
+    #     "adjacency_matrix": nx.adjacency_matrix(G, nodelist=(nodes_book + nodes_dvd + nodes_music + nodes_video)),
+    #
+    #     "indices_range_book": np.array(indices_range_book),
+    #     "indices_range_dvd": np.array(indices_range_dvd),
+    #     "indices_range_music": np.array(indices_range_music),
+    #     "indices_range_video": np.array(indices_range_video),
+    #
+    #     "index2Id_book": np.array(nodes_book),
+    #     "index2Id_dvd": np.array(nodes_dvd),
+    #     "index2Id_music": np.array(nodes_music),
+    #     "index2Id_video": np.array(nodes_video),
+    # }
+    # np.save("./datasets/amazon-data-graph.npy", data)
 
     # Knowledge layer: customers (the edge between product and customer is review)
     product_customer_edges = []
     for node in G.nodes():
         for r in products[node]["reviews"]:
-            if float(r["rating"]) >= 4.0:  # only consider reviews whose rating >= 4
+            if float(r["rating"]) >= 4.0 and int(r["votes"] >= 20 and float(r["helpful"])/float(r["votes"]) >= 0.8):  # filter reviews
                 product_customer_edges.append((node, r["customer"]))
     G.add_edges_from(product_customer_edges)
 

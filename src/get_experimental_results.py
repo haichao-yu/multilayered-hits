@@ -20,6 +20,8 @@ def get_experimental_results(products, selected_layers, data, u, v, K=5):
 
     if "GroupNet" in data:  # multi-layered HITS
         for i, g in enumerate(data["GroupDict"]):
+            if g == "customer":
+                continue
             temp = {"group": g, "products": []}
             index2Id = data["WithinLayerNetsDict"][i]
             rank_ui = np.flip(np.argsort(u[i].todense().getA1()), axis=0)
@@ -35,6 +37,8 @@ def get_experimental_results(products, selected_layers, data, u, v, K=5):
             top_K_products.append(temp)
     else:  # regular HITS
         for g in selected_layers:
+            if g == "customer":
+                continue
             temp = {"group": g, "products": []}
             ui = u[data['indices_range_' + g][0]:data['indices_range_' + g][1], 0]
             vi = v[data['indices_range_' + g][0]:data['indices_range_' + g][1], 0]

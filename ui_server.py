@@ -15,7 +15,7 @@ app = Flask(__name__)
 app.config['MONGO_DBNAME'] = 'amazon'
 app.config['MONGO_URI'] = 'mongodb://localhost:27017/amazon'
 mongo = PyMongo(app)
-dataset = './AmazonDataProcessing/datasets/amazon-data-graph.npy'
+dataset = './AmazonDataProcessing/datasets/amazon-data-knowledge-graph.npy'
 
 
 @app.route('/')
@@ -33,7 +33,7 @@ def run_experiment():
         return 'Hello world!'
     query_node_index = int(query_node_index)
 
-    layers = ('book', 'dvd', 'music', 'video')
+    layers = ('book', 'dvd', 'music', 'video', 'customer')
     selected_layers = []
     for l in layers:
         if request.args.get('is_' + l + '_selected') == 'true':
@@ -48,14 +48,14 @@ def run_experiment():
         if query_node_index == -1:  # 'ranking'
             data = load_data_regular_hits_ranking(dataset, selected_layers)
         else:  # 'query'
-            data = load_data_regular_hits_query(dataset, selected_layers, query_node_index=query_node_index)
+            data = load_data_regular_hits_query(dataset, query_node_index, selected_layers)
         A = data['adjacency_matrix']
         [u, v] = regular_hits(A)
     elif algorithm == 'multilayered_hits':
         if query_node_index == -1:  # 'ranking'
             data = load_data_multilayered_hits_ranking(dataset, selected_layers)
         else:  # 'query'
-            data = load_data_multilayered_hits_query(dataset, selected_layers, query_node_index=query_node_index)
+            data = load_data_multilayered_hits_query(dataset, query_node_index, selected_layers)
         G = data['GroupNet']
         A = data['WithinLayerNets']
         D = data['CrossLayerDependencies']
@@ -72,7 +72,7 @@ def submit_ratings():
     formatted_ratings = request.get_json()['formatted_ratings']
     mongo.db.ratings.insert_many(formatted_ratings)
 
-    return "The ratings have been submitted successfully!"
+    return 'The ratings have been submitted successfully!'
 
 
 if __name__ == '__main__':

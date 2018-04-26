@@ -3,7 +3,7 @@ from subgraph_from_bfs import subgraph_from_bfs
 from subgraph_from_rwr import subgraph_from_rwr
 
 
-def load_data_multilayered_hits_ranking(dataset, selected_layers=("book", "dvd", "music", "video")):
+def load_data_multilayered_hits_ranking(dataset, selected_layers):
 
     # Load data
     data = np.load(dataset).item()
@@ -45,7 +45,7 @@ def load_data_multilayered_hits_ranking(dataset, selected_layers=("book", "dvd",
     return input_data
 
 
-def load_data_multilayered_hits_query(dataset, query_node_index, selected_layers=("book", "dvd", "music", "video")):
+def load_data_multilayered_hits_query(dataset, query_node_index, selected_layers):
 
     # Load data
     data = np.load(dataset).item()
@@ -103,7 +103,7 @@ def load_data_multilayered_hits_query(dataset, query_node_index, selected_layers
     return input_data
 
 
-def load_data_regular_hits_ranking(dataset, selected_layers=("book", "dvd", "music", "video")):
+def load_data_regular_hits_ranking(dataset, selected_layers):
 
     data = np.load(dataset).item()
     adjacency_matrix = data["adjacency_matrix"]
@@ -124,7 +124,7 @@ def load_data_regular_hits_ranking(dataset, selected_layers=("book", "dvd", "mus
     return input_data
 
 
-def load_data_regular_hits_query(dataset, query_node_index, selected_layers=("book", "dvd", "music", "video")):
+def load_data_regular_hits_query(dataset, query_node_index, selected_layers):
 
     # Load data
     data = np.load(dataset).item()

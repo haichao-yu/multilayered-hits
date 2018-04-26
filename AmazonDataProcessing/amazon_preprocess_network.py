@@ -83,7 +83,7 @@ def amazon_preprocess_network():
     for node in G.nodes():
         if not isinstance(node, int):
             nodes_customer.append(node)
-    print len(nodes_customer)     # 1144145
+    print len(nodes_customer)   # 64608
 
     # Save the data (With knowledge layer - customers)
     data = {

@@ -2,6 +2,7 @@ import os
 import gzip
 import shutil
 import json
+import re
 from collections import OrderedDict
 
 
@@ -21,6 +22,7 @@ def amazon_mata2json():
     salesranks = []
     avg_ratings = []
     reviews = []
+    categories = []
 
     while True:
 
@@ -69,11 +71,42 @@ def amazon_mata2json():
                     review = OrderedDict([("date", r[0]), ("customer", r[2]), ("rating", float(r[4])), ("votes", int(r[6])), ("helpful", int(r[8]))])
                     rlist.append(review)
             reviews.append(rlist)
+        if items[0] == "categories:":
+            while len(categories) < len(ASINs) - 1:
+                categories.append([])
+            numOfLines = int(items[1])
+
+            cList = []
+            if numOfLines > 0:
+                for i in range(numOfLines):
+                    c = file_amazon_metadata.readline().strip().split("|")
+                    c = [x for x in c if x != '']  # remove ''
+                    if groups[-1] == "Book" and len(c) >= 3 and c[1].find("Subjects") != -1:
+                        tmp = re.sub('\[[\s\S]*\]', '', c[2])
+                        if tmp not in cList:
+                            cList.append(tmp)
+                        continue
+                    if groups[-1] == "DVD" and len(c) >= 4 and c[2].find("Genres") != -1:
+                        tmp = re.sub('\[[\s\S]*\]', '', c[3])
+                        if tmp not in cList:
+                            cList.append(tmp)
+                        continue
+                    if groups[-1] == "Music" and len(c) >= 3 and c[1].find("Styles") != -1:
+                        tmp = re.sub('\[[\s\S]*\]', '', c[2])
+                        if tmp not in cList:
+                            cList.append(tmp)
+                        continue
+                    if groups[-1] == "Video" and len(c) >= 4 and c[2].find("Genres") != -1:
+                        tmp = re.sub('\[[\s\S]*\]', '', c[3])
+                        if tmp not in cList:
+                            cList.append(tmp)
+                        continue
+            categories.append(cList)
 
     numOfProducts = len(ASINs)
     products = []
     for i in range(numOfProducts):
-        products.append(OrderedDict([("Id", Ids[i]), ("ASIN", ASINs[i]), ("title", titles[i]), ("group", groups[i]), ("salesrank", salesranks[i]), ("avg_rating", avg_ratings[i]), ("reviews", reviews[i])]))
+        products.append(OrderedDict([("Id", Ids[i]), ("ASIN", ASINs[i]), ("title", titles[i]), ("group", groups[i]), ("salesrank", salesranks[i]), ("categories", categories[i]), ("avg_rating", avg_ratings[i]), ("reviews", reviews[i])]))
 
     with open("./datasets/amazon-products.json", "w") as f:
         json.dump(products, f)

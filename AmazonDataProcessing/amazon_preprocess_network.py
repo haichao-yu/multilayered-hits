@@ -44,10 +44,10 @@ def amazon_preprocess_network():
             nodes_music.append(node)
         else:  # "Video"
             nodes_video.append(node)
-    print len(nodes_book)       # 248916
-    print len(nodes_dvd)        # 15743
-    print len(nodes_music)      # 54824
-    print len(nodes_video)      # 15361
+    print len(nodes_book)           # 248916
+    print len(nodes_dvd)            # 15743
+    print len(nodes_music)          # 54824
+    print len(nodes_video)          # 15361
 
     # Get indices range for each group
     indices_range_book = [0, 0 + len(nodes_book)]
@@ -83,23 +83,38 @@ def amazon_preprocess_network():
     for node in G.nodes():
         if not isinstance(node, int):
             nodes_customer.append(node)
-    print len(nodes_customer)   # 64608
+    indices_range_customers = [indices_range_video[1], indices_range_video[1] + len(nodes_customer)]
+    print len(nodes_customer)       # 64608
+
+    # Knowledge layer: categories (nodes are categories)
+    product_category_edges = []
+    nodes_categories = []
+    for node in (nodes_book + nodes_dvd + nodes_music + nodes_video):
+        for c in products[node]["categories"]:
+            product_category_edges.append((node, c))
+            if c not in nodes_categories:
+                nodes_categories.append(c)
+    G.add_edges_from(product_category_edges)
+    indices_range_categories = [indices_range_customers[1], indices_range_customers[1] + len(nodes_customer)]
+    print len(nodes_categories)     # 73
 
     # Save the data (With knowledge layer - customers)
     data = {
-        "adjacency_matrix": nx.adjacency_matrix(G, nodelist=(nodes_book + nodes_dvd + nodes_music + nodes_video + nodes_customer)),
+        "adjacency_matrix": nx.adjacency_matrix(G, nodelist=(nodes_book + nodes_dvd + nodes_music + nodes_video + nodes_customer + nodes_categories)),
 
         "indices_range_book": np.array(indices_range_book),
         "indices_range_dvd": np.array(indices_range_dvd),
         "indices_range_music": np.array(indices_range_music),
         "indices_range_video": np.array(indices_range_video),
-        "indices_range_customer": np.array([indices_range_video[1], indices_range_video[1] + len(nodes_customer)]),
+        "indices_range_customer": np.array(indices_range_customers),
+        "indices_range_categories": np.array(indices_range_categories),
 
         "index2Id_book": np.array(nodes_book),
         "index2Id_dvd": np.array(nodes_dvd),
         "index2Id_music": np.array(nodes_music),
         "index2Id_video": np.array(nodes_video),
         "index2Id_customer": np.array(nodes_customer),
+        "index2Id_categories": np.array(nodes_categories),
     }
     np.save("./datasets/amazon-data-knowledge-graph.npy", data)
 
